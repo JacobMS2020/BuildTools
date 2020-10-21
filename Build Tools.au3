@@ -11,7 +11,7 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.0.1"
+Global $version="4.0.0.2"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -28,8 +28,9 @@ ProgressSet(20,"Setting up Varables...")
 $ErrorMissingFiles=0
 
 ;=== Links ===
-Global $LinkWebsiteHelp="https://sites.google.com/view/buildtoolsnp/help"
+Global $LinkWebsiteHelp="https://github.com/kingjacob280/BuildTools/wiki/Help"
 Global $LinkWebsite="https://sites.google.com/view/buildtoolsnp/home"
+Global $LinkCurrentVersion="https://raw.githubusercontent.com/kingjacob280/BuildTools/main/current%20version.txt"
 Global $LinkGrabify="https://grabify.link/KQJ835" ; Tracking link for stats
 
 ;=== Dir ===
@@ -61,12 +62,11 @@ Global $DirToFolder=@UserProfileDir
 _log("File Check Done")
 
 ;=== Version ===
-Global $CurrentVersion=BinaryToString(InetRead("https://drive.google.com/uc?export=download&id=1XN8GZcnw5diq4-O2yHsdG558yUiPdPhQ"),4)
+Global $CurrentVersion=BinaryToString(InetRead($LinkCurrentVersion))
 If $CurrentVersion="" Then
 	_log("ERROR: Ccould not get current version")
 	$CurrentVersion="Unknown"
 EndIf
-If $admin=1 Then $CurrentVersion="admin"
 
 ;=== COLOR ===
 Global $colorOrange=0xF89123
@@ -167,7 +167,9 @@ ProgressSet(80,"Building GUI...")
 Global $guiH, $guiW
 $guiH=700
 $guiW=450
-GUICreate("Build Tools (v"&$version&")",$guiW,$guiH)
+$guiName="Build Tools (v"&$version&")"
+If $admin=1 Then $guiName="Build Tools (v"&$Version&") - admin"
+GUICreate($guiName,$guiW,$guiH)
 	GUISetBkColor(0xffffff)
 
 ; --------------------------------------------------------------------------------------- Bottom
