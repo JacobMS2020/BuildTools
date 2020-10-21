@@ -121,7 +121,7 @@ _log("Vars loaded")
 _log("---running---")
 ProgressSet(60,"More setup...")
 
-#Region ==================================================================================================================== Licencing/Startup/logging
+#Region ==================================================================================================================== Startup
 
 
 If FileExists($FileStartUp) Then ;--------------------------- Remove startup files (if existes)
@@ -132,7 +132,7 @@ EndIf
 
 If $admin=0 Then InetRead($LinkGrabify,3) ; Tracking for stats
 
-#EndRegion==================================================================================================================== Licencing
+#EndRegion==================================================================================================================== Startup
 
 #Region ==================================================================================================================== Var/Status Setup
 
@@ -167,7 +167,6 @@ $guiH=700
 $guiW=450
 GUICreate("Build Tools (v"&$version&")",$guiW,$guiH)
 	GUISetBkColor(0xffffff)
-	;WinSetOnTop("Build Tools (v"&$version&")","",1) ;Removed due to issues with message boxes (might bring back)
 
 ; --------------------------------------------------------------------------------------- Bottom
 
@@ -329,10 +328,6 @@ $top+=25
 $LablToDir=GUICtrlCreateLabel($DirToFolder,$left,$top,$width)
 $top+=20
 
-;$ButtonCopyAll=GUICtrlCreateButton("Copy All",$left,$top,$width)
-;	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-;$top+=25
-
 $ButtonCopyUserData=GUICtrlCreateButton("Copy All (Except Appdata)",$left,$top,$width)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=25
@@ -490,7 +485,7 @@ WEnd
 
 #Region ==================================================================================================================== FUNCTIONS
 
-Func _FastBootOnOff()
+Func _FastBootOnOff() ;Turns windows fast boot on or off  by looking at reg values
 
 	_log("_FastBootOnOff called")
 	$regHibernateEnabledRead=RegRead($regHibernateEnabled[0],$regHibernateEnabled[1])
