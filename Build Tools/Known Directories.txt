@@ -1,0 +1,5 @@
+\AppData\Local\Microsoft\Outlook
+\AppData\Roaming\Thunderbird\Profiles
+\AppData\Roaming\Adobe\Acrobat\DC\Security\reader_fss_signature_initials
+\Appdata\Roaming\Apple Computer\MobileSync
+\AppData\Roaming\Microsoft\Signatures
