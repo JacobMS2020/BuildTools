@@ -24,6 +24,9 @@ ProgressSet(20,"Setting up Varables...")
 #include <File.au3>
 #include <GUIComboBoxEx.au3>
 
+;=== Error ===
+$ErrorMissingFiles=0
+
 ;=== Links ===
 Global $LinkWebsiteHelp="https://sites.google.com/view/buildtoolsnp/help"
 Global $LinkWebsite="https://sites.google.com/view/buildtoolsnp/home"
@@ -41,17 +44,11 @@ Global $FileClipHistory=$DirBin&"\ClipBoardHistory.txt"
 
 ;SetDefaultBrowser.exe
 Global $FileDefaultBrowserEXE=$DirOther&"\SetDefaultBrowser.exe"
-If Not FileExists($FileDefaultBrowserEXE) Then
-	MsgBox(48,"Warning!","Warning! There are missing files, please re-download the software folder!")
-	_log("WARNING: SetDefaultBrowser.exe is missing!")
-EndIf
+If Not FileExists($FileDefaultBrowserEXE) Then $ErrorMissingFiles+=1
 
 ;anydesk.exe
 Global $FileAnyDesk=$DirOther&"\anydesk.exe"
-If Not FileExists($FileAnyDesk) Then
-	MsgBox(48,"Warning!","Warning! There are missing files, please re-download the software folder!")
-	_log("WARNING: AnyDesk.exe is missing!")
-EndIf
+If Not FileExists($FileAnyDesk) Then $ErrorMissingFiles+=1
 
 Global $FileStartUp=@ScriptDir&"\Startup=true"
 Global $FileStartUpLink=@StartupCommonDir&"\buildtools.lnk"
@@ -131,6 +128,11 @@ If FileExists($FileStartUp) Then ;--------------------------- Remove startup fil
 EndIf
 
 If $admin=0 Then InetRead($LinkGrabify,3) ; Tracking for stats
+
+If $ErrorMissingFiles>0 Then
+	MsgBox(48,"Warning!","Warning! There are "&$ErrorMissingFiles&" missing files, please re-download the software folder!")
+	_log("WARNING: SetDefaultBrowser.exe is missing!")
+EndIf
 
 #EndRegion==================================================================================================================== Startup
 
