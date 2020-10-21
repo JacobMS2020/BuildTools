@@ -1,7 +1,5 @@
 # BuildTools
-<p>
-  Welcome to Build Tools!
-</p>
+Welcome to Build Tools!
 ## Help:
 <br>
 1: Download "Build Tools" Folder and the Build Tools EXE
