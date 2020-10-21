@@ -13,7 +13,7 @@ For more help and information visit <a href="https://sites.google.com/view/build
 <br>
 <br>
 <p>
-  Edit and Compaile:
+  Edit and Compile:
  </p>
  If you would like to edit and compile the script yourself, please install AutoIT from <a href="https://www.autoitscript.com/site/autoit/downloads/">here</a>. 
  <br>
