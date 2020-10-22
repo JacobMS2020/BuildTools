@@ -11,7 +11,7 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.0.2"
+Global $version="4.0.0.3"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -264,6 +264,10 @@ $InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-Laptop",($width*0.3)+10,$top
 	GUICtrlSetFont(-1,11,500)
 $top+=30
 
+$ButtonChangeUserName=GUICtrlCreateButton("Change Account User Name",5,$top,$width,25)
+	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
+$top+=30
+
 $ButtonReboot=GUICtrlCreateButton("Reboot and startup",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=30
@@ -477,6 +481,9 @@ While 1
 		Case $ButtonAddKnownDirectories
 			ShellExecute($fileKnownDirectories)
 
+		Case $ButtonChangeUserName
+			_ChangeUserName()
+
 		;Case $ButtonLog
 			;ShellExecute($fileLog)
 
@@ -488,6 +495,57 @@ WEnd
 #EndRegion ==================================================================================================================== While Loop 1 -- MAIN
 
 #Region ==================================================================================================================== FUNCTIONS
+
+Func _ChangeUserName()
+
+	_log("_ChangeUserName called")
+	MsgBox(0,"ERROR","Work in Progress, please see source code.")
+	#cs ; This command does not yet work, dir does not get renamed AND the full name of the user does not update. -Change user name -Change Dir name
+	$_ChangeUserName_SID=_SidGet()
+	$temp=MsgBox(4,"Change User Name","Please Read:"&@CRLF&@CRLF&"Do you want to change the name of user "&@UserName&" and do these two number look similar?"&@CRLF&"S-1-5-21-3912756739-280575556-4175553296-500"&@CRLF&$_ChangeUserName_SID)
+	If $temp=6 Then
+		$_ChangeUserName_NewUserName=InputBox("Change User Name","Input the new user name you would like to change to:")
+		If $_ChangeUserName_NewUserName<>"" Then
+			$_ChangeUserName_RegPath="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\"&$_ChangeUserName_SID
+			$_ChangeUserName_DirOLD=RegRead($_ChangeUserName_RegPath,"ProfileImagePath")
+			$_ChangeUserName_DirNEW=@HomeDrive&"\Users\"&$_ChangeUserName_NewUserName
+			$temp=MsgBox(4,"","This will also change the user folder for this account."&@CRLF&"From: "&$_ChangeUserName_DirOLD&@CRLF&" To: "&$_ChangeUserName_DirNEW)
+
+			If $temp=6 Then
+				_log("Changing User Name...")
+				$i=Run('"' & @ComSpec & '" /k ' &"wmic useraccount where name='"&@UserName&"' rename '"&$_ChangeUserName_NewUserName&"'",@WindowsDir,@SW_HIDE,2)
+				ProcessWaitClose($i)
+				_log("CMD: "&StdoutRead($i))
+				_log("Reg change: "&$_ChangeUserName_RegPath)
+				$temp=RegWrite($_ChangeUserName_RegPath,"ProfileImagePath","REG_EXPAND_SZ",@HomeDrive&"\Users\"&$_ChangeUserName_NewUserName)
+				_log("RegWrite out Code: "&$temp)
+				_log("Chaging Dir name...")
+				$i=Run('"' & @ComSpec & '" /k ' &"ren "&$_ChangeUserName_DirOLD&" "&$_ChangeUserName_DirNEW,@WindowsDir,@SW_HIDE,2)
+				ProcessWaitClose($i)
+				_log("CMD: "&StdoutRead($i))
+			EndIf
+
+		EndIf
+	EndIf
+	#ce
+
+
+EndFunc
+
+Func _SidGet()
+
+	_log("_SidGet called")
+	$i=Run('"' & @ComSpec & '" /k ' &"wmic useraccount where name='"&@UserName&"' get sid",@WindowsDir,@SW_HIDE,2)
+	ProcessWaitClose($i)
+	$Read=StdoutRead($i)
+	$Read=StringSplit($Read,"D")
+	$Read=StringSplit($Read[2],StringTrimRight(@HomeDrive,1))
+	$sid=StringStripWS($Read[1],7)
+	_log("SID: "&$sid)
+	Return $sid
+
+EndFunc
+
 
 Func _FastBootOnOff() ;Turns windows fast boot on or off  by looking at reg values
 
