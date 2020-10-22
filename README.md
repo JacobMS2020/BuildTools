@@ -1,5 +1,9 @@
 # BuildTools
 Welcome to Build Tools!
+## What is it?
+Build Tools is a single place for a number of tools used to automate the job of a technician rebuilding a Windows 10 computer.
+<br>
+Build Tools has a number of things it can do. Find the full list on the GitHub Wiki <a href="https://github.com/kingjacob280/BuildTools/wiki/Help">help</a> page.
 ## Help:
 <br>
 1: Download "Build Tools" Folder and the Build Tools EXE
@@ -7,7 +11,7 @@ Welcome to Build Tools!
 2: Run and have fun!
 <br>
 <br>
-For more help and information visit <a href="https://sites.google.com/view/buildtoolsnp/">Build Tools</a>!
+For more help and information visit <a href="https://sites.google.com/view/buildtoolsnp/">Build Tools</a> or the GitHub Wiki <a href="https://github.com/kingjacob280/BuildTools/wiki/Help">help</a> page.
 <br>
 <br>
 <p>
