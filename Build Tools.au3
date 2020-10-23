@@ -2,9 +2,9 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.0.0.0
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.0.0
-#AutoIt3Wrapper_Res_ProductVersion=4.0.0.0
+#AutoIt3Wrapper_Res_Fileversion=4.0.1.0
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.1.0
+#AutoIt3Wrapper_Res_ProductVersion=4.0.1.0
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
