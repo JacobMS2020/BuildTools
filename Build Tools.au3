@@ -11,7 +11,7 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.0.3"
+Global $version="4.0.1.0"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -546,7 +546,6 @@ Func _SidGet()
 
 EndFunc
 
-
 Func _FastBootOnOff() ;Turns windows fast boot on or off  by looking at reg values
 
 	_log("_FastBootOnOff called")
@@ -567,7 +566,7 @@ Func _FastBootOnOff() ;Turns windows fast boot on or off  by looking at reg valu
 		MsgBox(48,"WARNING","Could not read power options value!")
 		_log("WARNING: Could not read reg value for fast boot.")
 	EndIf
-	Sleep(500)
+	Sleep(1000)
 	_StatusHibernateEnabled()
 
 EndFunc
@@ -626,7 +625,7 @@ Func _CopyFromCombo()
 		$temp=MsgBox(4,'Copy','Copy all (Excuding: hidden, system and temp files)"'&@CRLF&"From: "&$_CopyFromCombo_DirFromFolder&@CRLF&'To: '&$_CopyFromCombo_DirToFolder)
 		If $temp=6 Then
 			_log("Copying From: "&$_CopyFromCombo_DirFromFolder&"To: "&$_CopyFromCombo_DirToFolder)
-			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_CopyFromCombo_DirFromFolder&'" "'&$_CopyFromCombo_DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:SHT',@WindowsDir,@SW_SHOW)
+			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_CopyFromCombo_DirFromFolder&'" "'&$_CopyFromCombo_DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST',@WindowsDir,@SW_SHOW)
 		EndIf
 	Else
 		MsgBox(16,"Error","This dir does not exist"&@CRLF&"From: "&$_CopyFromCombo_DirFromFolder)
@@ -641,7 +640,7 @@ Func _CopyAllButAppdata()
 		$temp=MsgBox(4,'Copy','Copy all folder exept folder called "appdata" and will skip any hidden, system or temp files.'&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
 		If $temp=6 Then
 			_log("Copying without appdata From: "&$DirFromFolder&"To: "&$DirToFolder)
-			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$DirFromFolder&'" "'&$DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:SHT /XD appdata',@WindowsDir,@SW_SHOW)
+			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$DirFromFolder&'" "'&$DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST /XD appdata',@WindowsDir,@SW_SHOW)
 		EndIf
 	Else
 		MsgBox(16,"Error","one or more of these dirs does not exist"&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
@@ -658,7 +657,7 @@ Func _copyChromeData() ;--------------------------------------------------------
 		$temp=MsgBox(4,'Copy','Copy Chrome Data?'&@CRLF&"From: "&$DirFromChromeData&@CRLF&'To: '&$DirToChromeData)
 		If $temp=6 Then
 			_log("Copying Chrome Data From: "&$DirFromChromeData&"To: "&$DirToChromeData)
-			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$DirFromChromeData&'" "'&$DirToChromeData&'" /E /Z /ZB /R:2 /W:1 /V /XD appdata',@WindowsDir,@SW_SHOW)
+			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$DirFromChromeData&'" "'&$DirToChromeData&'" /E /Z /ZB /R:2 /W:1 /V',@WindowsDir,@SW_SHOW)
 		EndIf
 	Else
 		MsgBox(16,"Error","Error, no Chrome Data found. (please specify the user dir)"&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
