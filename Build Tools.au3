@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.0.1.0
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.1.0
-#AutoIt3Wrapper_Res_ProductVersion=4.0.1.0
+#AutoIt3Wrapper_Res_Fileversion=4.0.1.1
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.1.1
+#AutoIt3Wrapper_Res_ProductVersion=4.0.1.1
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.1.0"
+Global $version="4.0.1.1"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -622,7 +622,7 @@ Func _CopyFromCombo()
 	$_CopyFromCombo_DirToFolder=$DirToFolder&GUICtrlRead($ComboCopyFrom)
 
 	If FileExists($_CopyFromCombo_DirFromFolder) Then
-		$temp=MsgBox(4,'Copy','Copy all (Excuding: hidden, system and temp files)"'&@CRLF&"From: "&$_CopyFromCombo_DirFromFolder&@CRLF&'To: '&$_CopyFromCombo_DirToFolder)
+		$temp=MsgBox(4,'Copy','Copy all (Excuding: system and temp files)"'&@CRLF&"From: "&$_CopyFromCombo_DirFromFolder&@CRLF&'To: '&$_CopyFromCombo_DirToFolder)
 		If $temp=6 Then
 			_log("Copying From: "&$_CopyFromCombo_DirFromFolder&"To: "&$_CopyFromCombo_DirToFolder)
 			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_CopyFromCombo_DirFromFolder&'" "'&$_CopyFromCombo_DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST',@WindowsDir,@SW_SHOW)
@@ -637,7 +637,7 @@ Func _CopyAllButAppdata()
 
 	_log("_CopyAllButAppdata called")
 	If FileExists($DirFromFolder) And FileExists($DirToFolder) Then
-		$temp=MsgBox(4,'Copy','Copy all folder exept folder called "appdata" and will skip any hidden, system or temp files.'&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
+		$temp=MsgBox(4,'Copy','Copy all folder exept folder called "appdata" and will skip any system or temp files.'&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
 		If $temp=6 Then
 			_log("Copying without appdata From: "&$DirFromFolder&"To: "&$DirToFolder)
 			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$DirFromFolder&'" "'&$DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST /XD appdata',@WindowsDir,@SW_SHOW)
