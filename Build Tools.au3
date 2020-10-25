@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.0.1.1
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.1.1
-#AutoIt3Wrapper_Res_ProductVersion=4.0.1.1
+#AutoIt3Wrapper_Res_Fileversion=4.0.2.0
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.2.0
+#AutoIt3Wrapper_Res_ProductVersion=4.0.2.0
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.1.1"
+Global $version="4.0.2.0"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -36,7 +36,7 @@ Global $LinkGrabify="https://grabify.link/KQJ835" ; Tracking link for stats
 ;=== Dir ===
 Global $DirBin=@ScriptDir&"\Build Tools"
 If Not FileExists($DirBin) Then DirCreate($DirBin)
-Global $DirSoftware=$DirBin&"\Installers"
+Global $DirInstallers=$DirBin&"\Installers"
 Global $DirOther=$DirBin&"\Other"
 
 ;=== File ===
@@ -77,11 +77,12 @@ Global $colorBlue=0x000fb0
 Global $colorBlack=0x000000
 Global $colorPink=0xff54cf
 
-;=== Button ===
+;=== GUI Button ===
 $FontButtons=10
 $WeightButtons=700
 $AttButtons=""
 $FontNameButtons=""
+$SpacingButtons=25
 
 ;=== Server ===
 Global $ServerActive=0
@@ -103,7 +104,7 @@ Global $StatusSearch, $StatusTask, $StatusCortana
 Global $ButtonAbout, $ButtonInstall, $ButtonLog, $ButtonSearchIcon, $ButtonTaskIcon, $ButtonCopyAll
 Global $ComboFromDrive, $ComboUsersFrom, $LableUserFromDir
 Global $Socket, $SocketListen
-Global $FontButtons,$WeightButtons,$AttButtons,$FontNameButtons
+Global $FontButtons,$WeightButtons,$AttButtons,$FontNameButtons, $SpacingButtons
 
 ;=== stopping decloration error ===
 Global $ButtonSearchIcon="error"
@@ -165,7 +166,7 @@ ProgressSet(80,"Building GUI...")
 
 #Region ==================================================================================================================== GUI setup
 Global $guiH, $guiW
-$guiH=700
+$guiH=765
 $guiW=450
 $guiName="Build Tools (v"&$version&")"
 If $admin=1 Then $guiName="Build Tools (v"&$Version&") - admin"
@@ -190,7 +191,10 @@ GUICtrlCreateLabel("Newest Version: "&$CurrentVersion,130,$guiH-15,135,15)
 	EndIf
 
 $LableCurrentClip=GUICtrlCreateLabel("Current Clipboard: "&ClipGet(),5,$guiH-215,$guiW-10,15)
+	GUICtrlSetColor(-1,$colorGreen)
 $ButtonClear=GUICtrlCreateButton("Clear",5,$guiH-200,75)
+GUICtrlCreateLabel("Clipboard History - (This will be keeped even after program is closed)",85,$guiH-195,$guiW-90)
+	GUICtrlSetFont(-1,8,700)
 $ListClipHistory=GUICtrlCreateList(ClipGet(),5,$guiH-175,$guiW-10,150)
 If FileExists($FileClipHistory) Then
 	$count=_FileCountLines($FileClipHistory)
@@ -212,7 +216,7 @@ $width=$guiW/2-3
 $top+=20
 
 ;Software setup
-Global $SoftwareSearch=_FileListToArray($DirSoftware,"*.exe")
+Global $SoftwareSearch=_FileListToArray($DirInstallers,"*.exe")
 
 Global $SoftwareError=0
 If Not @error Then
@@ -230,31 +234,33 @@ EndIf
 
 $ButtonInstall=GUICtrlCreateButton("Install Selected",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
+$top+=$SpacingButtons
+$ButtonAddInstallers=GUICtrlCreateButton("Add More Installers",5,$top,$width,25)
 $top+=55
 
 $ButtonGoogleChromeDefault=GUICtrlCreateButton("Google Chrome Default",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 $ButtonHibernateEnabled=GUICtrlCreateButton("Fast Boot On/Off",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 $ButtonTaskbarIconsSetDefault=GUICtrlCreateButton("Taskbar Icons to Default",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 $ButtonExplorerRestart=GUICtrlCreateButton("Restart Explorer",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 $ButtonUpdateWindows=GUICtrlCreateButton("Update Windows",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 $ButtonSetupAnyDesk=GUICtrlCreateButton("Setup AnyDesk",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 $LableComputerName=GUICtrlCreateLabel("Computer Name: "&@ComputerName,5,$top,$width,25)
 $top+=20
@@ -262,15 +268,15 @@ $ButtonChangeComputerName=GUICtrlCreateButton("Change",5,$top,$width*0.3,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-Laptop",($width*0.3)+10,$top,$width*0.65,25)
 	GUICtrlSetFont(-1,11,500)
-$top+=30
+$top+=$SpacingButtons
 
 $ButtonChangeUserName=GUICtrlCreateButton("Change Account User Name",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 $ButtonReboot=GUICtrlCreateButton("Reboot and startup",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=30
+$top+=$SpacingButtons
 
 ; --------------------------------------------------------------------------------------- RIGHT
 
@@ -483,6 +489,9 @@ While 1
 
 		Case $ButtonChangeUserName
 			_ChangeUserName()
+
+		Case $ButtonAddInstallers
+			ShellExecute($DirInstallers)
 
 		;Case $ButtonLog
 			;ShellExecute($fileLog)
@@ -744,7 +753,7 @@ Func _install() ;---------------------------------------------------------------
 		For $i=1 To $SoftwareSearch[0] step 1
 			If GUICtrlRead($CheckSoftware[$i])=1 Then
 				GUICtrlSetState($CheckSoftware[$i],4)
-				ShellExecute($DirSoftware&"\"&$SoftwareSearch[$i])
+				ShellExecute($DirInstallers&"\"&$SoftwareSearch[$i])
 			EndIf
 		Next
 
