@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.0.2.0
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.2.0
-#AutoIt3Wrapper_Res_ProductVersion=4.0.2.0
+#AutoIt3Wrapper_Res_Fileversion=4.0.2.3
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.2.3
+#AutoIt3Wrapper_Res_ProductVersion=4.0.2.3
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.2.0"
+Global $version="4.0.2.3"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -575,7 +575,7 @@ Func _FastBootOnOff() ;Turns windows fast boot on or off  by looking at reg valu
 		MsgBox(48,"WARNING","Could not read power options value!")
 		_log("WARNING: Could not read reg value for fast boot.")
 	EndIf
-	Sleep(1000)
+	Sleep(500)
 	_StatusHibernateEnabled()
 
 EndFunc
@@ -646,10 +646,10 @@ Func _CopyAllButAppdata()
 
 	_log("_CopyAllButAppdata called")
 	If FileExists($DirFromFolder) And FileExists($DirToFolder) Then
-		$temp=MsgBox(4,'Copy','Copy all folder exept folder called "appdata" and will skip any system or temp files.'&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
+		$temp=MsgBox(4,'Copy','Copy all folder exept folder called "appdata" and will skip any system and temp files.'&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
 		If $temp=6 Then
-			_log("Copying without appdata From: "&$DirFromFolder&"To: "&$DirToFolder)
-			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$DirFromFolder&'" "'&$DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST /XD appdata',@WindowsDir,@SW_SHOW)
+			_log("Copying without appdata From: "&$DirFromFolder&" To: "&$DirToFolder)
+			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$DirFromFolder&'" "'&$DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST /xjd /XD "'&$DirFromFolder&'\Appdata"',@WindowsDir,@SW_SHOW)
 		EndIf
 	Else
 		MsgBox(16,"Error","one or more of these dirs does not exist"&@CRLF&"From: "&$DirFromFolder&@CRLF&'To: '&$DirToFolder)
