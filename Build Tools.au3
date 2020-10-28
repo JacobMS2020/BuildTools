@@ -11,7 +11,7 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.2.3"
+Global $version="4.0.3.0"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -274,7 +274,7 @@ $ButtonChangeUserName=GUICtrlCreateButton("Change Account User Name",5,$top,$wid
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
 
-$ButtonReboot=GUICtrlCreateButton("Reboot and startup",5,$top,$width,25)
+$ButtonReboot=GUICtrlCreateButton("Reboot Computer",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
 
@@ -388,7 +388,7 @@ While 1
 
 	If TimerDiff($ClipTimer)>1000 Then
 		$ClipRead=ClipGet()
-		If $ClipRead<>$ClipCurrent Then
+		If $ClipRead<>$ClipCurrent And $ClipRead<>"" Then
 			$ClipCurrent=ClipGet()
 			GUICtrlSetData($LableCurrentClip,"Current Clipboard: "&$ClipCurrent)
 			GUICtrlSetData($ListClipHistory,$ClipCurrent)
@@ -583,7 +583,8 @@ EndFunc
 Func _Reboot()
 
 	_log("_Reboot called")
-	$temp=MsgBox(4,"Reboot?","Reboot computer and auto start Build Tools?")
+	$temp=MsgBox(4,"Reboot?","Reboot computer?")
+	#cs -- auto restart not working
 	If $temp=6 Then
 		$temp=FileCreateShortcut(@ScriptFullPath,$FileStartUpLink)
 		If $temp=0 Then
@@ -591,7 +592,9 @@ Func _Reboot()
 			_log("WARNING: Could not creat startup link: "&$FileStartUpLink)
 		Else
 			FileWrite($FileStartUp,"True")
-		EndIf
+	EndIf
+	#ce
+	If $temp=6 Then
 		Shutdown(6)
 		_exit()
 	EndIf
@@ -634,7 +637,7 @@ Func _CopyFromCombo()
 		$temp=MsgBox(4,'Copy','Copy all (Excuding: system and temp files)"'&@CRLF&"From: "&$_CopyFromCombo_DirFromFolder&@CRLF&'To: '&$_CopyFromCombo_DirToFolder)
 		If $temp=6 Then
 			_log("Copying From: "&$_CopyFromCombo_DirFromFolder&"To: "&$_CopyFromCombo_DirToFolder)
-			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_CopyFromCombo_DirFromFolder&'" "'&$_CopyFromCombo_DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST',@WindowsDir,@SW_SHOW)
+			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_CopyFromCombo_DirFromFolder&'" "'&$_CopyFromCombo_DirToFolder&'" /E /Z /ZB /R:2 /W:1 /V /xjd /XA:ST',@WindowsDir,@SW_SHOW)
 		EndIf
 	Else
 		MsgBox(16,"Error","This dir does not exist"&@CRLF&"From: "&$_CopyFromCombo_DirFromFolder)
