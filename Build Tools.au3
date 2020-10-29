@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.1.0.1
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.1
-#AutoIt3Wrapper_Res_ProductVersion=4.1.0.1
+#AutoIt3Wrapper_Res_Fileversion=4.1.0.2
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.2
+#AutoIt3Wrapper_Res_ProductVersion=4.1.0.2
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.1.0.1"
+Global $version="4.1.0.2"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -520,7 +520,7 @@ Func _Update()
 	_log("_Update called")
 
 	$_UpdateLink="https://github.com/kingjacob280/BuildTools/raw/main/Build%20Tools%20"&$CurrentVersion&".exe"
-	$_UpdateFileName="Build Tools "&$CurrentVersion
+	$_UpdateFileName="Build Tools "&$CurrentVersion&".exe"
 
 	If $CurrentVersion>$version And $CurrentVersion<>"unknown" Then
 		$temp=MsgBox(4,"Update","There is a new update (Version: "&$CurrentVersion&"). Would you like to download and run this update?"&@CRLF&"It is recomended that you read the version log changes on the GitHub page first.")
@@ -536,6 +536,8 @@ Func _Update()
 					$temp3=1
 					$_UpdateError=1
 				EndIf
+				If InetGetInfo($temp,3)="True" Then $temp3=1
+				Sleep(50)
 			Until $temp3=1
 			If $_UpdateError=1 Then
 				_log("ERROR: downloading new build tools.exe from link: "&$_UpdateLink)
