@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.0.2.3
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.0.2.3
-#AutoIt3Wrapper_Res_ProductVersion=4.0.2.3
+#AutoIt3Wrapper_Res_Fileversion=4.1.0.0
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.0
+#AutoIt3Wrapper_Res_ProductVersion=4.1.0.0
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.0.3.0"
+Global $version="4.1.0.0"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -29,7 +29,7 @@ $ErrorMissingFiles=0
 
 ;=== Links ===
 Global $LinkWebsiteHelp="https://github.com/kingjacob280/BuildTools/wiki/Help"
-Global $LinkWebsite="https://sites.google.com/view/buildtoolsnp/home"
+Global $LinkWebsite="https://github.com/kingjacob280/BuildTools"
 Global $LinkCurrentVersion="https://raw.githubusercontent.com/kingjacob280/BuildTools/main/current%20version.txt"
 Global $LinkGrabify="https://grabify.link/KQJ835" ; Tracking link for stats
 
@@ -63,9 +63,10 @@ _log("File Check Done")
 
 ;=== Version ===
 Global $CurrentVersion=BinaryToString(InetRead($LinkCurrentVersion))
+$CurrentVersion=StringStripWS($CurrentVersion,8)
 If $CurrentVersion="" Then
 	_log("ERROR: Ccould not get current version")
-	$CurrentVersion="Unknown"
+	$CurrentVersion="unknown"
 EndIf
 
 ;=== COLOR ===
@@ -135,6 +136,8 @@ If $ErrorMissingFiles>0 Then
 	_log("WARNING: SetDefaultBrowser.exe is missing!")
 EndIf
 
+_log("Version: "&$version)
+
 #EndRegion==================================================================================================================== Startup
 
 #Region ==================================================================================================================== Var/Status Setup
@@ -176,18 +179,22 @@ GUICreate($guiName,$guiW,$guiH)
 ; --------------------------------------------------------------------------------------- Bottom
 
 $ButtonAbout=GUICtrlCreateButton("about",$guiW-82,$guiH-22,80,20)
+	GUICtrlSetFont(01,7)
+	GUICtrlSetColor(-1,$colorBlue)
+
 $ButtonHelp=GUICtrlCreateButton("help",$guiW-164,$guiH-22,80,20)
-
-
-$LableWebsite=GUICtrlCreateLabel("www.click-for.website",5,$guiH-15,150,15)
 	GUICtrlSetFont(01,7)
 	GUICtrlSetColor(-1,$colorBlue)
-GUICtrlCreateLabel("Newest Version: "&$CurrentVersion,130,$guiH-15,135,15)
+
+$ButtonWebsite=GUICtrlCreateButton("GitHub Page",5,$guiH-22,135,20)
 	GUICtrlSetFont(01,7)
-	If $CurrentVersion=$version Then
 	GUICtrlSetColor(-1,$colorBlue)
+$ButtonUpdate=GUICtrlCreateButton("Update ("&$CurrentVersion&")",140,$guiH-22,135,20)
+	GUICtrlSetFont(01,7)
+	If $CurrentVersion>$version Then
+		GUICtrlSetColor(-1,$colorOrange)
 	Else
-	GUICtrlSetColor(-1,$colorOrange)
+		GUICtrlSetColor(-1,$colorBlue)
 	EndIf
 
 $LableCurrentClip=GUICtrlCreateLabel("Current Clipboard: "&ClipGet(),5,$guiH-215,$guiW-10,15)
@@ -367,8 +374,7 @@ GUISetState()
 
 #EndRegion ==================================================================================================================== GUI setup
 
-
-;==================================================================================================================== Last call (var setup)
+#Region ==================================================================================================================== Last call (var setup)
 _StatusGoogleChromeDefault()
 _StatusHibernateEnabled()
 
@@ -378,6 +384,7 @@ Global $ClipTimer=TimerInit()
 ProgressSet(100,"Done")
 _log("Loading Done")
 Sleep(300)
+#EndRegion
 ProgressOff()
 
 #Region ==================================================================================================================== While Loop 1 -- MAIN
@@ -443,7 +450,7 @@ While 1
 		Case $ButtonPast
 			GUICtrlSetData($InputCopy,ClipGet())
 
-		Case $LableWebsite
+		Case $ButtonWebsite
 			ShellExecute($LinkWebsite)
 
 		Case $ButtonHelp
@@ -493,6 +500,9 @@ While 1
 		Case $ButtonAddInstallers
 			ShellExecute($DirInstallers)
 
+		Case $ButtonUpdate
+			_Update()
+
 		;Case $ButtonLog
 			;ShellExecute($fileLog)
 
@@ -504,6 +514,42 @@ WEnd
 #EndRegion ==================================================================================================================== While Loop 1 -- MAIN
 
 #Region ==================================================================================================================== FUNCTIONS
+
+Func _Update()
+
+	_log("_Update called")
+
+	$_UpdateLink="https://github.com/kingjacob280/BuildTools/raw/main/Build%20Tools%20"&$CurrentVersion&".exe"
+	$_UpdateFileName="Build Tools "&$CurrentVersion
+
+	If $CurrentVersion>$version And $CurrentVersion<>"unknown" Then
+		$temp=MsgBox(4,"Update","There is a new update (Version: "&$CurrentVersion&"). Would you like to download and run this update?"&@CRLF&"It is recomended that you read the version log changes on the GitHub page first.")
+		If $temp=6 Then
+			_log("There is a new version. Downloading...")
+			$temp=InetGet($_UpdateLink,$_UpdateFileName,0,1)
+			$temp3=0
+			$_UpdateError=0
+			$tempTimer=TimerInit()
+			Do
+				$temp2=InetGetInfo($temp,0)
+				If $temp2=0 And TimerDiff($tempTimer)>3000 Then
+					$temp3=1
+					$_UpdateError=1
+				EndIf
+			Until $temp3=1
+			If $_UpdateError=1 Then
+				_log("ERROR: downloading new build tools.exe from link: "&$_UpdateLink)
+				MsgBox(48,"ERROR","There was an error downloading the update!",5)
+			Else
+				ShellExecute($_UpdateFileName)
+				_exit()
+			EndIf
+		EndIf
+	Else
+		MsgBox(0,"Update","There is no new updates :)")
+	EndIf
+
+EndFunc
 
 Func _ChangeUserName()
 
