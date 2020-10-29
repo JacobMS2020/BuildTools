@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.1.0.0
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.0
-#AutoIt3Wrapper_Res_ProductVersion=4.1.0.0
+#AutoIt3Wrapper_Res_Fileversion=4.1.0.1
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.1
+#AutoIt3Wrapper_Res_ProductVersion=4.1.0.1
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.1.0.0"
+Global $version="4.1.0.1"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
