@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.1.0.2
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.2
-#AutoIt3Wrapper_Res_ProductVersion=4.1.0.2
+#AutoIt3Wrapper_Res_Fileversion=4.1.0.3
+#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.3
+#AutoIt3Wrapper_Res_ProductVersion=4.1.0.3
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.1.0.2"
+Global $version="4.1.0.3"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -277,9 +277,11 @@ $InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-Laptop",($width*0.3)+10,$top
 	GUICtrlSetFont(-1,11,500)
 $top+=$SpacingButtons
 
+#cs; Not used yet because of coding dificalties
 $ButtonChangeUserName=GUICtrlCreateButton("Change Account User Name",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
+#ce
 
 $ButtonReboot=GUICtrlCreateButton("Reboot Computer",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
@@ -494,8 +496,8 @@ While 1
 		Case $ButtonAddKnownDirectories
 			ShellExecute($fileKnownDirectories)
 
-		Case $ButtonChangeUserName
-			_ChangeUserName()
+		;Case $ButtonChangeUserName ;Future use
+			;_ChangeUserName()
 
 		Case $ButtonAddInstallers
 			ShellExecute($DirInstallers)
@@ -608,13 +610,13 @@ Func _FastBootOnOff() ;Turns windows fast boot on or off  by looking at reg valu
 	_log("_FastBootOnOff called")
 	$regHibernateEnabledRead=RegRead($regHibernateEnabled[0],$regHibernateEnabled[1])
 	If $regHibernateEnabledRead=1 Then
-		$temp=MsgBox(4,"Fast Boot","Fast Boot is ON, do you want to turn it OFF?")
+		$temp=MsgBox(4,"Fast Boot","Fast Boot is ON, do you want to run the CMD OFF command? (This does not work on some computers)")
 		If $temp=6 Then
 			Run('"' & @ComSpec & '" /k ' &"powercfg -h off",@WindowsDir,@SW_SHOW)
 			_log("Turned Fast Boot Off")
 		EndIf
 	ElseIf $regHibernateEnabledRead=0 Then
-		$temp=MsgBox(4,"Fast Boot","Fast Boot is OFF, do you want to turn it ON?")
+		$temp=MsgBox(4,"Fast Boot","Fast Boot is OFF, do you want to run the CMD ON command? (This does not work on some computers)")
 		If $temp=6 Then
 			Run('"' & @ComSpec & '" /k ' &"powercfg -h on",@WindowsDir,@SW_SHOW)
 			_log("Turned Fast Boot On")
