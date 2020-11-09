@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.1.0.3
-#AutoIt3Wrapper_Res_ProductName=Build Tools 4.1.0.3
-#AutoIt3Wrapper_Res_ProductVersion=4.1.0.3
+#AutoIt3Wrapper_Res_Fileversion=4.1.1.0
+#AutoIt3Wrapper_Res_ProductName=Build Tools4.1.1.0
+#AutoIt3Wrapper_Res_ProductVersion=4.1.1.0
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.1.0.3"
+Global $version="4.1.1.0"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -42,6 +42,7 @@ Global $DirOther=$DirBin&"\Other"
 ;=== File ===
 Global $fileLog=$DirBin&"\Log.log"
 Global $FileClipHistory=$DirBin&"\ClipBoardHistory.txt"
+_log("---running---") ;Start the log file
 
 ;SetDefaultBrowser.exe
 Global $FileDefaultBrowserEXE=$DirOther&"\SetDefaultBrowser.exe"
@@ -65,8 +66,10 @@ _log("File Check Done")
 Global $CurrentVersion=BinaryToString(InetRead($LinkCurrentVersion))
 $CurrentVersion=StringStripWS($CurrentVersion,8)
 If $CurrentVersion="" Then
-	_log("ERROR: Ccould not get current version")
+	_log("ERROR: Could not get current version")
 	$CurrentVersion="unknown"
+Else
+	_log("Current Version Read: "&$CurrentVersion)
 EndIf
 
 ;=== COLOR ===
@@ -117,7 +120,6 @@ Global $ButtonHibernateEnabled="error"
 _log("Vars loaded")
 ;----Running live
 #EndRegion ==================================================================================================================== Var
-_log("---running---")
 ProgressSet(60,"More setup...")
 
 #Region ==================================================================================================================== Startup
@@ -169,7 +171,7 @@ ProgressSet(80,"Building GUI...")
 
 #Region ==================================================================================================================== GUI setup
 Global $guiH, $guiW
-$guiH=765
+$guiH=715
 $guiW=450
 $guiName="Build Tools (v"&$version&")"
 If $admin=1 Then $guiName="Build Tools (v"&$Version&") - admin"
@@ -245,10 +247,6 @@ $top+=$SpacingButtons
 $ButtonAddInstallers=GUICtrlCreateButton("Add More Installers",5,$top,$width,25)
 $top+=55
 
-$ButtonGoogleChromeDefault=GUICtrlCreateButton("Google Chrome Default",5,$top,$width,25)
-	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$top+=$SpacingButtons
-
 $ButtonHibernateEnabled=GUICtrlCreateButton("Fast Boot On/Off",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
@@ -261,11 +259,19 @@ $ButtonExplorerRestart=GUICtrlCreateButton("Restart Explorer",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
 
-$ButtonUpdateWindows=GUICtrlCreateButton("Update Windows",5,$top,$width,25)
+$ButtonSetupAnyDesk=GUICtrlCreateButton("Setup AnyDesk",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
 
-$ButtonSetupAnyDesk=GUICtrlCreateButton("Setup AnyDesk",5,$top,$width,25)
+$ButtonGoogleChromeDefault=GUICtrlCreateButton("Google Chrome Default",5,$top,$width,25)
+	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
+$top+=$SpacingButtons
+
+$ButtonPowerOptions=GUICtrlCreateButton("Power Options",5,$top,$width,25)
+	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
+$top+=$SpacingButtons
+
+$ButtonUpdateWindows=GUICtrlCreateButton("Update Windows",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
 
@@ -273,7 +279,7 @@ $LableComputerName=GUICtrlCreateLabel("Computer Name: "&@ComputerName,5,$top,$wi
 $top+=20
 $ButtonChangeComputerName=GUICtrlCreateButton("Change",5,$top,$width*0.3,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-Laptop",($width*0.3)+10,$top,$width*0.65,25)
+$InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-LAPTOP",($width*0.3)+10,$top,$width*0.65,25)
 	GUICtrlSetFont(-1,11,500)
 $top+=$SpacingButtons
 
@@ -409,7 +415,7 @@ While 1
 
 	Switch $guiMSG
 		Case -3
-			_exit()
+			_exit(0)
 
 		Case $ListClipHistory ;ClipBoard History
 			$ClipCurrent=GUICtrlRead($ListClipHistory)
@@ -495,12 +501,14 @@ While 1
 
 		Case $ButtonAddKnownDirectories
 			ShellExecute($fileKnownDirectories)
+			MsgBox(0,"Info","Program will need to be reloaded.",3)
 
 		;Case $ButtonChangeUserName ;Future use
 			;_ChangeUserName()
 
 		Case $ButtonAddInstallers
 			ShellExecute($DirInstallers)
+			MsgBox(0,"Info","Program will need to be reloaded.",3)
 
 		Case $ButtonUpdate
 			_Update()
@@ -508,7 +516,8 @@ While 1
 		;Case $ButtonLog
 			;ShellExecute($fileLog)
 
-		;Case
+		Case $ButtonPowerOptions
+			_PowerOptions()
 
 		;Case
 	EndSwitch
@@ -516,6 +525,13 @@ WEnd
 #EndRegion ==================================================================================================================== While Loop 1 -- MAIN
 
 #Region ==================================================================================================================== FUNCTIONS
+
+Func _PowerOptions()
+
+	_log("PowerOptions called")
+	ShellExecute("powercfg.cpl")
+
+EndFunc
 
 Func _Update()
 
@@ -546,7 +562,7 @@ Func _Update()
 				MsgBox(48,"ERROR","There was an error downloading the update!",5)
 			Else
 				ShellExecute($_UpdateFileName)
-				_exit()
+				_exit(0)
 			EndIf
 		EndIf
 	Else
@@ -645,8 +661,8 @@ Func _Reboot()
 	EndIf
 	#ce
 	If $temp=6 Then
-		Shutdown(6)
-		_exit()
+		;Shutdown(6);The shutdown in now done in the _exit() function
+		_exit("Reboot")
 	EndIf
 
 EndFunc
@@ -843,11 +859,20 @@ Func _log($_logMSG) ;-----------------------------------------------------------
 	_FileWriteLog($fileLog,$_logMSG,1)
 EndFunc
 
-Func _exit() ;------------------------------------------------------------------------------ EXIT
+Func _exit($_exitCode) ;------------------------------------------------------------------------------ EXIT
 
-	_log("STOPPING")
+	$_exitCode=String($_exitCode)
+	_log("_exit() called (code: "&$_exitCode&")")
 	TCPShutdown()
+
+	If $_exitCode="Reboot" Then
+		_log("Rebooting computer (called on exit)")
+		Shutdown(6)
+	EndIf
+
+	_log("---stopping---")
 	Exit
+
 EndFunc
 #EndRegion ==================================================================================================================== FUNCTIONS
 
@@ -855,9 +880,5 @@ EndFunc
 
 
 MsgBox(16,"ERROR","END OF SCRIPT, you have fallen of the edge")
-
-
-
-
 
 
