@@ -11,7 +11,7 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.1.1.0"
+Global $version="4.1.1.1"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -171,7 +171,7 @@ ProgressSet(80,"Building GUI...")
 
 #Region ==================================================================================================================== GUI setup
 Global $guiH, $guiW
-$guiH=715
+$guiH=725
 $guiW=450
 $guiName="Build Tools (v"&$version&")"
 If $admin=1 Then $guiName="Build Tools (v"&$Version&") - admin"
@@ -375,6 +375,9 @@ For $i=1 To $lines Step 1
 Next
 $top+=25
 $ButtonAddKnownDirectories=GUICtrlCreateButton("Add More Known Directories",$left,$top,$width)
+$top+=25
+$ButtonImportExportAutoStream=GUICtrlCreateButton("Import/Export Auto Stream",$left,$top,$width)
+	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 
 ; -- Last GUI setup
 
@@ -519,6 +522,9 @@ While 1
 		Case $ButtonPowerOptions
 			_PowerOptions()
 
+		Case $ButtonImportExportAutoStream
+			_ImportExportAutoStream()
+
 		;Case
 	EndSwitch
 WEnd
@@ -526,9 +532,72 @@ WEnd
 
 #Region ==================================================================================================================== FUNCTIONS
 
+Func _ImportExportAutoStream()
+
+	_log("_ImportExportAutoStream called")
+
+
+	If Not FileExists(@LocalAppDataDir&"\Microsoft\Outlook\RoamCache") Then
+		MsgBox(16,"Error","Outlook 'RoamCache' folder does not exist!"&@CRLF&"Please setup Outlook First.")
+		Return
+	EndIf
+
+	If ProcessExists("OUTLOOK.exe") Then
+		$temp=MsgBox(48,"WARNING","Please close outlook!")
+	EndIf
+
+
+	FileChangeDir(@LocalAppDataDir&"\Microsoft\Outlook\RoamCache")
+	$_ImportExportAutoStream_Search=FileFindFirstFile("Stream_Autocomplete*.*")
+	$count=0
+	Do
+		$_ImportExportAutoStream_SearchTemp=FileFindNextFile($_ImportExportAutoStream_Search)
+		If @error<>1 Then
+			$_ImportExportAutoStream_FileCurrentLocalStream=$_ImportExportAutoStream_SearchTemp
+			$count+=1
+		EndIf
+	Until @error=1
+	If $count>1 Then
+		MsgBox(48,"WARNING","There is more than 1 Auto Stream File!")
+		_log("WARNING: More than one auto stream file found. Count: "&$count)
+	EndIf
+
+	$_ImportExportAutoStream_GUI=GUICreate("Import/Export Auto Stream",$guiW-20,40)
+	$_ImportExportAutoStream_GUI_ButtonExport=GUICtrlCreateButton("Export/Backup",5,5,($guiW-20)/2-5,25)
+	$_ImportExportAutoStream_GUI_ButtonImport=GUICtrlCreateButton("Import",($guiW-20)/2,5,($guiW-20)/2-5,25)
+
+	GUISetState(@SW_SHOW,$_ImportExportAutoStream_GUI)
+
+	While 1
+		$guiMSG=GUIGetMsg()
+
+		Switch $guiMSG
+			Case $_ImportExportAutoStream_GUI_ButtonExport
+				GUIDelete($_ImportExportAutoStream_GUI)
+				MsgBox(0,"","Please Backup this file by selecting a 'To' destination folder under 'Folder Copy' and backing up the 'known directory': \Appdata\Local\Microsoft\Outlook")
+				ExitLoop
+
+			Case $_ImportExportAutoStream_GUI_ButtonImport
+				GUIDelete($_ImportExportAutoStream_GUI)
+				$_ImportExportAutoStream_FileImport=FileOpenDialog("Import Auto Stream File",$DirFromFolder&"\Appdata\Local\Microsoft\Outlook\RoamCache","Stream (Stream_Autocomplete*.*)",3)
+				ExitLoop
+
+			Case -3
+				GUIDelete($_ImportExportAutoStream_GUI)
+				Return
+
+
+		EndSwitch
+	WEnd
+
+	Return
+
+EndFunc
+
+
 Func _PowerOptions()
 
-	_log("PowerOptions called")
+	_log("_PowerOptions called")
 	ShellExecute("powercfg.cpl")
 
 EndFunc
