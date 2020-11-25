@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=4.1.1.0
-#AutoIt3Wrapper_Res_ProductName=Build Tools4.1.1.0
-#AutoIt3Wrapper_Res_ProductVersion=4.1.1.0
+#AutoIt3Wrapper_Res_Fileversion=5.0.0.0
+#AutoIt3Wrapper_Res_ProductName=Build Tools5.0.0.0
+#AutoIt3Wrapper_Res_ProductVersion=5.0.0.0
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="4.1.1.1"
+Global $version="5.0.0.0"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -38,6 +38,7 @@ Global $DirBin=@ScriptDir&"\Build Tools"
 If Not FileExists($DirBin) Then DirCreate($DirBin)
 Global $DirInstallers=$DirBin&"\Installers"
 Global $DirOther=$DirBin&"\Other"
+Global $dirLocalRoamCache=@LocalAppDataDir&"\Microsoft\Outlook\RoamCache"
 
 ;=== File ===
 Global $fileLog=$DirBin&"\Log.log"
@@ -171,7 +172,7 @@ ProgressSet(80,"Building GUI...")
 
 #Region ==================================================================================================================== GUI setup
 Global $guiH, $guiW
-$guiH=725
+$guiH=675
 $guiW=450
 $guiName="Build Tools (v"&$version&")"
 If $admin=1 Then $guiName="Build Tools (v"&$Version&") - admin"
@@ -279,7 +280,7 @@ $LableComputerName=GUICtrlCreateLabel("Computer Name: "&@ComputerName,5,$top,$wi
 $top+=20
 $ButtonChangeComputerName=GUICtrlCreateButton("Change",5,$top,$width*0.3,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
-$InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-LAPTOP",($width*0.3)+10,$top,$width*0.65,25)
+$InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-COMPUTER",($width*0.3)+10,$top,$width*0.65,25)
 	GUICtrlSetFont(-1,11,500)
 $top+=$SpacingButtons
 
@@ -336,48 +337,19 @@ $top+=35
 GUICtrlCreateLabel("  Folder Copy  ",$left,$top,$width,-1,0x01) ; -- Folder Copy
 	GUICtrlSetFont(-1,10,700,4)
 	GUICtrlSetColor(-1,$colorGreen)
-$top+=20
-GUICtrlCreateLabel("  FROM  ",$left,$top,$width,-1,0x01)
-	GUICtrlSetFont(-1,10,700)
-$top+=20
-
-$ButtonBrowseFromFolder=GUICtrlCreateButton("Browse to user profile folder",$left,$top,$width)
 $top+=25
 
-$LableFromDir=GUICtrlCreateLabel($DirFromFolder,$left,$top,$width)
-$top+=20
-
-GUICtrlCreateLabel("  TO  ",$left,$top,$width,-1,0x01)
-	GUICtrlSetFont(-1,10,700)
-$top+=20
-
-$ButtonBrowseToFolder=GUICtrlCreateButton("Browse to destination folder",$left,$top,$width)
-$top+=25
-
-$LablToDir=GUICtrlCreateLabel($DirToFolder,$left,$top,$width)
-$top+=20
-
-$ButtonCopyUserData=GUICtrlCreateButton("Copy All (Except Appdata)",$left,$top,$width)
+$ButtonFolderBackup=GUICtrlCreateButton("Backup Folders / Drive to Drive",$left,$top,$width)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=25
 
-$ButtonCopyChromeData=GUICtrlCreateButton("Copy Chrome Data",$left,$top,$width)
+$ButtonFolderImport=GUICtrlCreateButton("Import Folders",$left,$top,$width)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=25
 
-$ButtonCopyFromCombo=GUICtrlCreateButton("Copy From:",$left,$top,$width)
+$ButtonImportExportAutoStream=GUICtrlCreateButton("Import Outlook Autocomplete",$left,$top,$width)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=25
-$ComboCopyFrom=GUICtrlCreateCombo("\Appdata\Roaming\Microsoft\Outlook",$left,$top,$width)
-$lines=_FileCountLines($fileKnownDirectories)
-For $i=1 To $lines Step 1
-	GUICtrlSetData($ComboCopyFrom,FileReadLine($fileKnownDirectories,$i))
-Next
-$top+=25
-$ButtonAddKnownDirectories=GUICtrlCreateButton("Add More Known Directories",$left,$top,$width)
-$top+=25
-$ButtonImportExportAutoStream=GUICtrlCreateButton("Import/Export Auto Stream",$left,$top,$width)
-	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 
 ; -- Last GUI setup
 
@@ -397,7 +369,6 @@ _log("Loading Done")
 Sleep(300)
 #EndRegion
 ProgressOff()
-
 #Region ==================================================================================================================== While Loop 1 -- MAIN
 While 1
 	$guiMSG = GUIGetMsg()
@@ -467,29 +438,6 @@ While 1
 		Case $ButtonHelp
 			ShellExecute($LinkWebsiteHelp)
 
-		Case $ButtonBrowseFromFolder
-			$Temp=FileSelectFolder("Browse to user folder you would like to copy","::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
-			If Not @error=1 Then
-				$DirFromFolder=$Temp
-				GUICtrlSetData($LableFromDir,$DirFromFolder)
-			EndIf
-
-		Case $ButtonBrowseToFolder
-			$Temp=FileSelectFolder("Browse to user folder you would like to copy","::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
-			If Not @error=1 Then
-				$DirToFolder=$Temp
-				GUICtrlSetData($LablToDir,$DirToFolder)
-			EndIf
-
-		Case $ButtonCopyUserData
-			_CopyAllButAppdata()
-
-		Case $ButtonCopyChromeData
-			_copyChromeData()
-
-		Case $ButtonCopyFromCombo
-			_CopyFromCombo()
-
 		Case $ButtonSetupAnyDesk
 			_SetupAnyDesk()
 
@@ -501,10 +449,6 @@ While 1
 
 		Case $ButtonHibernateEnabled
 			_FastBootOnOff()
-
-		Case $ButtonAddKnownDirectories
-			ShellExecute($fileKnownDirectories)
-			MsgBox(0,"Info","Program will need to be reloaded.",3)
 
 		;Case $ButtonChangeUserName ;Future use
 			;_ChangeUserName()
@@ -523,7 +467,13 @@ While 1
 			_PowerOptions()
 
 		Case $ButtonImportExportAutoStream
-			_ImportExportAutoStream()
+			_IEAS()
+
+		Case $ButtonFolderBackup
+			_FolderBackup()
+
+		Case $ButtonFolderImport
+			_FolderImport()
 
 		;Case
 	EndSwitch
@@ -532,68 +482,209 @@ WEnd
 
 #Region ==================================================================================================================== FUNCTIONS
 
-Func _ImportExportAutoStream()
+Func _FolderBackup()
 
-	_log("_ImportExportAutoStream called")
+	_log("_FolderBackup called")
 
-
-	If Not FileExists(@LocalAppDataDir&"\Microsoft\Outlook\RoamCache") Then
-		MsgBox(16,"Error","Outlook 'RoamCache' folder does not exist!"&@CRLF&"Please setup Outlook First.")
+	$temp=MsgBox(4,"USER ACCOUNT SELECTION","Backup folders from this user profile dir? (You will need to change this to the old user profile if you are doing a 'drive to drive' copy."&@CRLF&@UserProfileDir)
+	If $temp=6 Then
+		$_FB_DirUserAccount=@UserProfileDir
+	ElseIf $temp=7 Then
+		$_FB_DirUserAccount=FileSelectFolder("Browse to user folder you would like to backup from","::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
+	Else
 		Return
 	EndIf
 
-	If ProcessExists("OUTLOOK.exe") Then
-		$temp=MsgBox(48,"WARNING","Please close outlook!")
+	If Not FileExists($_FB_DirUserAccount&"\Documents") Then
+		MsgBox(16,"ERROR","This is not a user account")
+		Return
 	EndIf
 
+	;var setup
+	Global $_FB_CheckBox[99]
+	$_FB_DriveToDrive=0
 
-	FileChangeDir(@LocalAppDataDir&"\Microsoft\Outlook\RoamCache")
-	$_ImportExportAutoStream_Search=FileFindFirstFile("Stream_Autocomplete*.*")
-	$count=0
-	Do
-		$_ImportExportAutoStream_SearchTemp=FileFindNextFile($_ImportExportAutoStream_Search)
-		If @error<>1 Then
-			$_ImportExportAutoStream_FileCurrentLocalStream=$_ImportExportAutoStream_SearchTemp
-			$count+=1
+	;GUI setup
+	$_FB_Width=500
+	$_FB_Hight=600
+	$_FB_GUI=GUICreate("Folder Backup",$_FB_Width,$_FB_Hight)
+
+	$top=5
+	GUICtrlCreateLabel("Selected 'From' User: "&$_FB_DirUserAccount,5,$top,$_FB_Width-10)
+	$top+=20
+
+	GUICtrlCreateLabel("Select folders to backup:",5,$top,$_FB_Width-10)
+		GUICtrlSetFont(-1,11,700)
+	$top+=20
+
+	$_FB_CheckBoxAllButAppdata=GUICtrlCreateCheckbox("Root user folders excluding AppData (Desktop, Documents, ect...)",5,$top,$_FB_Width-10)
+	GUICtrlSetState(-1,1)
+	$top+=20
+
+	If Not FileExists($_FB_DirUserAccount&"\AppData\Local\Microsoft\Outlook\RoamCache") Then
+		$_FB_CheckBoxOutlookStreamAuto=GUICtrlCreateCheckbox("Outlook RoamCache (will be saved to the root backup/user folder)",5,$top,$_FB_Width-10,"",0x08000000)
+	Else
+		$_FB_CheckBoxOutlookStreamAuto=GUICtrlCreateCheckbox("Outlook RoamCache (will be saved to the root backup/user folder)",5,$top,$_FB_Width-10)
+	EndIf
+	$top+=20
+
+	$_FB_LineCount=_FileCountLines($fileKnownDirectories)
+	For $i=1 To $_FB_LineCount Step 1
+		$tempdir=FileReadLine($fileKnownDirectories,$i)
+		If FileExists($_FB_DirUserAccount&$tempdir) Then
+			$_FB_CheckBox[$i]=GUICtrlCreateCheckbox($tempdir,5,$top,$_FB_Width-10)
+		Else
+			GUICtrlCreateCheckbox($tempdir,5,$top,$_FB_Width-10,"",0x08000000)
 		EndIf
-	Until @error=1
-	If $count>1 Then
-		MsgBox(48,"WARNING","There is more than 1 Auto Stream File!")
-		_log("WARNING: More than one auto stream file found. Count: "&$count)
-	EndIf
+		$top+=20
+	Next
+	$top+=10
 
-	$_ImportExportAutoStream_GUI=GUICreate("Import/Export Auto Stream",$guiW-20,40)
-	$_ImportExportAutoStream_GUI_ButtonExport=GUICtrlCreateButton("Export/Backup",5,5,($guiW-20)/2-5,25)
-	$_ImportExportAutoStream_GUI_ButtonImport=GUICtrlCreateButton("Import",($guiW-20)/2,5,($guiW-20)/2-5,25)
+	$_FB_ButtonBackup=GUICtrlCreateButton("Backup",5,$top,75,25)
+		GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
+	$_FB_ButtonBackupDrivetoDrive=GUICtrlCreateButton("Copy Drive to Drive",80,$top,150,25)
+		GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
+	$_FB_ButtonAddDirectories=GUICtrlCreateButton("Add more directories",230,$top,115,25)
+	$top+=25
+	GUICtrlCreateLabel("WANRING: If you are doing a 'Drive to Drive' copy, the backup location will be the new user profile root folder.",5,$top,$_FB_Width-10,50)
 
-	GUISetState(@SW_SHOW,$_ImportExportAutoStream_GUI)
+	GUISetState(@SW_SHOW,$_FB_GUI)
 
+	;Loop setup
 	While 1
 		$guiMSG=GUIGetMsg()
 
 		Switch $guiMSG
-			Case $_ImportExportAutoStream_GUI_ButtonExport
-				GUIDelete($_ImportExportAutoStream_GUI)
-				MsgBox(0,"","Please Backup this file by selecting a 'To' destination folder under 'Folder Copy' and backing up the 'known directory': \Appdata\Local\Microsoft\Outlook")
-				ExitLoop
-
-			Case $_ImportExportAutoStream_GUI_ButtonImport
-				GUIDelete($_ImportExportAutoStream_GUI)
-				$_ImportExportAutoStream_FileImport=FileOpenDialog("Import Auto Stream File",$DirFromFolder&"\Appdata\Local\Microsoft\Outlook\RoamCache","Stream (Stream_Autocomplete*.*)",3)
-				ExitLoop
-
 			Case -3
-				GUIDelete($_ImportExportAutoStream_GUI)
+				GUIDelete($_FB_GUI)
 				Return
 
+			Case $_FB_ButtonBackup
+				ExitLoop
+
+			Case $_FB_ButtonBackupDrivetoDrive
+				$_FB_DriveToDrive=1
+				_log("Drive to Drive selected 1/2")
+				ExitLoop
+
+			Case $_FB_ButtonAddDirectories
+				ShellExecute($fileKnownDirectories)
 
 		EndSwitch
+
 	WEnd
 
+	;Backup process
+	$_FB_DirBackupLocation=FileSelectFolder("Browse to Backup location","::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
+	If $_FB_DriveToDrive=0 Then
+		$_FB_DirBackupLocation=$_FB_DirBackupLocation&"build_tools_backup_"&@UserName&"_"&@YEAR&@MON&@MDAY&@HOUR
+	EndIf
+	$temp=MsgBox(4,"Example","From: '"&$_FB_DirUserAccount&"\Documents Folder'"&@CRLF&"To: '"&$_FB_DirBackupLocation&"\Documents Folder'"&@CRLF&"Does this look correct?")
+	If $temp<>6 Then Return
+
+	If GUICtrlRead($_FB_CheckBoxAllButAppdata)=1 Then
+		_log("Copying all but appdata")
+		Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_FB_DirUserAccount&'" "'&$_FB_DirBackupLocation&'" /E /Z /ZB /R:2 /W:1 /V /XA:ST /xjd /XD "'&$_FB_DirUserAccount&'\Appdata"',@WindowsDir,@SW_SHOW)
+	EndIf
+
+	If GUICtrlRead($_FB_CheckBoxOutlookStreamAuto)=1 Then
+		_log("Copying OutlookStreamAutocompleate")
+		Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_FB_DirUserAccount&"\AppData\Local\Microsoft\Outlook\RoamCache"&'" "'&$_FB_DirBackupLocation&'\RoamCache'&'" /E /Z /ZB /R:2 /W:1 /V /xjd"',@WindowsDir,@SW_SHOW)
+	EndIf
+
+	For $i=1 To $_FB_LineCount Step 1
+		If GUICtrlRead($_FB_CheckBox[$i])=1 Then
+			$tempdir=FileReadLine($fileKnownDirectories,$i)
+			_log("Copying "&$tempdir)
+			Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_FB_DirUserAccount&$tempdir&'" "'&$_FB_DirBackupLocation&$tempdir&'" /E /Z /ZB /R:2 /W:1 /V /xjd"',@WindowsDir,@SW_SHOW)
+		EndIf
+	Next
+
+
+	GUIDelete($_FB_GUI)
 	Return
 
 EndFunc
 
+Func _FolderImport() ;-- Folder Import
+
+	_log("_FolderImport called")
+	$temp=MsgBox(52,'Warning','Did you backup user folders using Build Tools?'&@CRLF&'If you did not, the copy to a new user account will not work as permissions might be corrupt!')
+
+	$temp=MsgBox(4,"USER ACCOUNT SELECTION","Import folders into this user profile dir?"&@CRLF&@UserProfileDir)
+	If $temp=6 Then
+		$_FI_DirUserAccount=@UserProfileDir
+	ElseIf $temp=7 Then
+		$_FI_DirUserAccount=FileSelectFolder("Browse to user folder you would like to import folders to","::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
+	Else
+		Return
+	EndIf
+
+	If $temp<>6 Then Return
+
+	$_FI_DirImportLocation=FileSelectFolder("Select 'Build_Tools_Backup folder'","::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
+
+	$temp=MsgBox(4,'Confirm',"Copy folders and files:"&@CRLF&'From: '&$_FI_DirImportLocation&@CRLF&'To: '&$_FI_DirUserAccount)
+	If $temp<>6 Then Return
+
+	_log('')
+	Run('"' & @ComSpec & '" /k ' &'robocopy "'&$_FI_DirImportLocation&'" "'&$_FI_DirUserAccount&'" /E /Z /ZB /R:2 /W:1 /V /xjd"',@WindowsDir,@SW_SHOW)
+
+EndFunc
+
+Func _IEAS()
+
+	_log("_IEAS called")
+
+
+	If Not FileExists($dirLocalRoamCache) Then
+		MsgBox(16,"Error","Outlook 'RoamCache' folder does not exist!"&@CRLF&"Please setup Outlook First.")
+		Return
+	EndIf
+
+	MsgBox(48,"WARNING","1. Please close outlook!"&@CRLF&"2. Please use the 'Backup Folders' Tool and then the 'Import Folders' tool in Build Tools to export the RoamCache folder out of the old user profile."& _
+	@CRLF&"3. Note, this is for Outlook versions using Stream files only (not NK2)")
+
+
+	FileChangeDir($dirLocalRoamCache)
+	$_IEAS_Search=FileFindFirstFile("Stream_Autocomplete*.dat")
+	If $_IEAS_Search==-1 Then
+		MsgBox(16,"ERROR","No Stream file found!")
+		_log("ERROR: Could not find stream file.")
+		Return
+	EndIf
+	$count=0
+	Do
+		$_IEAS_SearchTemp=FileFindNextFile($_IEAS_Search)
+		If @error<>1 Then
+			$_IEAS_FileCurrentLocalStream=$_IEAS_SearchTemp
+			$count+=1
+		EndIf
+	Until @error=1
+	If $count>1 Then
+		MsgBox(16,"ERROR","There is more than 1 Auto Stream File! This automation process will not work, please notify the program admin.")
+		_log("ERROR: More than one auto stream file found. Count: "&$count)
+		ShellExecute($dirLocalRoamCache)
+		Return
+	EndIf
+
+	If Not FileExists(@UserProfileDir&"\RoamCache") Then MsgBox(48,"WARNING","You have not used Build Tools to export the Outlook RoamCache folder,"& _
+	" if you have please contact the program admin. You can now select the Stream file manualy and the process will continue.")
+	$_IEAS_FileStreamToImport=FileOpenDialog("Import Auto Stream File",@UserProfileDir&"\RoamCache","Stream (Stream_Autocomplete*.dat)",3)
+	If @error<>0 Then Return
+
+	;The automation part
+	FileCopy($dirLocalRoamCache&"\"&$_IEAS_FileCurrentLocalStream,$dirLocalRoamCache&"\"&$_IEAS_FileCurrentLocalStream&".build_tools_backup",0)
+	Do
+		FileDelete($dirLocalRoamCache&"\"&$_IEAS_FileCurrentLocalStream)
+		Sleep(1000)
+		FileCopy($_IEAS_FileStreamToImport,$dirLocalRoamCache&"\"&$_IEAS_FileCurrentLocalStream,1)
+		$temp=MsgBox(4,"Repeat","Repeat delete and copy of Stream file?"&@CRLF&"(Outlook will sometimes overwite the Stream_autocompleate file on its 1st boot after the copy)")
+	Until $temp<>6
+
+	Return
+
+EndFunc
 
 Func _PowerOptions()
 
@@ -762,6 +853,7 @@ Func _SetupAnyDesk()
 
 EndFunc
 
+#cs -- OLD Copy functions
 Func _CopyFromCombo()
 
 	_log("_CopyFromCombo called")
@@ -811,6 +903,7 @@ Func _copyChromeData() ;--------------------------------------------------------
 	EndIf
 
 EndFunc
+#ce
 
 Func _HelpGUI() ;------------------------------------------------------------------------------ Help GUI (Not in use)
 	_log("_Help Called")
@@ -949,5 +1042,3 @@ EndFunc
 
 
 MsgBox(16,"ERROR","END OF SCRIPT, you have fallen of the edge")
-
-
