@@ -2,6 +2,8 @@
 Welcome to Build Tools!
 <br>
 Please read the <a href="https://github.com/kingjacob280/BuildTools/wiki/Terms-and-Conditions-Of-Use">Terms and Conditions of use</a> before downloading :)
+<br>
+Also please read the <a href="https://github.com/kingjacob280/BuildTools/wiki/Help">help</a> file.
 ## What is it?
 Build Tools is a one place solution for several functions used to automate the job of a technician who is rebuilding Windows 10 computers.
 <br>
@@ -29,3 +31,4 @@ Jacob Stewart
 ## Screenshot:
  
 ![Screenshot](/Capture.PNG)
+![Screenshot](/Capture2.PNG)
