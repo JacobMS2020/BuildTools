@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=5.0.0.0
-#AutoIt3Wrapper_Res_ProductName=Build Tools5.0.0.0
-#AutoIt3Wrapper_Res_ProductVersion=5.0.0.0
+#AutoIt3Wrapper_Res_Fileversion=5.1.0.0
+#AutoIt3Wrapper_Res_ProductName=Build Tools5.1.0.0
+#AutoIt3Wrapper_Res_ProductVersion=5.1.0.0
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="5.0.0.0"
+Global $version="5.1.0.0"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -81,6 +81,10 @@ Global $colorGreen=0x478a00
 Global $colorBlue=0x000fb0
 Global $colorBlack=0x000000
 Global $colorPink=0xff54cf
+Global $colorGray=0xd1d1d1
+Global $colorGrayLight=0xededed
+
+Global $ColorInput=$colorGrayLight
 
 ;=== GUI Button ===
 $FontButtons=10
@@ -172,7 +176,7 @@ ProgressSet(80,"Building GUI...")
 
 #Region ==================================================================================================================== GUI setup
 Global $guiH, $guiW
-$guiH=675
+$guiH=695
 $guiW=450
 $guiName="Build Tools (v"&$version&")"
 If $admin=1 Then $guiName="Build Tools (v"&$Version&") - admin"
@@ -206,6 +210,7 @@ $ButtonClear=GUICtrlCreateButton("Clear",5,$guiH-200,75)
 GUICtrlCreateLabel("Clipboard History - (This will be keeped even after program is closed)",85,$guiH-195,$guiW-90)
 	GUICtrlSetFont(-1,8,700)
 $ListClipHistory=GUICtrlCreateList(ClipGet(),5,$guiH-175,$guiW-10,150)
+	GUICtrlSetBkColor(-1,$ColorInput)
 If FileExists($FileClipHistory) Then
 	$count=_FileCountLines($FileClipHistory)
 	For $i=1 to $count Step 1
@@ -217,9 +222,10 @@ EndIf
 
 ; --------------------------------------------------------------------------------------- TOP
 $top=5
-GUICtrlCreateLabel('Build Tools - By Jacob Stewart',5,$top,$guiW-10,15,0x01)
+GUICtrlCreateLabel('Build Tools 5 - Big Data',5,$top,$guiW-10,17,0x01)
 	GUICtrlSetFont(-1,11,600)
-	GUICtrlSetBkColor(-1,0xdbdbdb)
+	GUICtrlSetBkColor(-1,$colorRED_dark)
+	GUISetBkColor($colorGray)
 
 ; --------------------------------------------------------------------------------------- LEFT
 $width=$guiW/2-3
@@ -246,7 +252,7 @@ $ButtonInstall=GUICtrlCreateButton("Install Selected",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $top+=$SpacingButtons
 $ButtonAddInstallers=GUICtrlCreateButton("Add More Installers",5,$top,$width,25)
-$top+=55
+$top+=35
 
 $ButtonHibernateEnabled=GUICtrlCreateButton("Fast Boot On/Off",5,$top,$width,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
@@ -282,6 +288,7 @@ $ButtonChangeComputerName=GUICtrlCreateButton("Change",5,$top,$width*0.3,25)
 	GUICtrlSetFont(-1,$FontButtons,$WeightButtons,$AttButtons,$FontNameButtons)
 $InputChangeComputerName=GUICtrlCreateInput(@YEAR&"-COMPUTER",($width*0.3)+10,$top,$width*0.65,25)
 	GUICtrlSetFont(-1,11,500)
+	GUICtrlSetBkColor(-1,$ColorInput)
 $top+=$SpacingButtons
 
 #cs; Not used yet because of coding dificalties
@@ -312,12 +319,14 @@ GUICtrlCreateLabel("Server IP:",$left,$top+2,70)
 	GUICtrlSetFont(-1,10,700)
 $InputServerIP=GUICtrlCreateInput($ServerIP,$left+75,$top,$width-80)
 	GUICtrlSetFont(-1,9,700)
+	GUICtrlSetBkColor(-1,$ColorInput)
 $top+=25
 
 GUICtrlCreateLabel("Port:",$left,$top+2,70)
 	GUICtrlSetFont(-1,10,700)
 $InputServerPort=GUICtrlCreateInput($ServerPort,$left+75,$top,$width-80)
 	GUICtrlSetFont(-1,9,700)
+	GUICtrlSetBkColor(-1,$ColorInput)
 $top+=30
 
 GUICtrlCreateLabel("  Server to Client Copy  ",$left,$top,$width,-1,0x01)
@@ -326,6 +335,7 @@ GUICtrlCreateLabel("  Server to Client Copy  ",$left,$top,$width,-1,0x01)
 $top+=20
 
 $InputCopy=GUICtrlCreateInput("Message to send to client (or recive)",$left,$top,$width)
+	GUICtrlSetBkColor(-1,$ColorInput)
 $top+=25
 
 $ButtonUpdateCopy=GUICtrlCreateButton("Update and Copy",$left,$top,$width/2)
