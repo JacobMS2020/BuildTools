@@ -2,16 +2,16 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=5.1.0.0
-#AutoIt3Wrapper_Res_ProductName=Build Tools5.1.0.0
-#AutoIt3Wrapper_Res_ProductVersion=5.1.0.0
+#AutoIt3Wrapper_Res_Fileversion=5.1.0.1
+#AutoIt3Wrapper_Res_ProductName=Build Tools5.1.0.1
+#AutoIt3Wrapper_Res_ProductVersion=5.1.0.1
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="5.1.0.0"
+Global $version="5.1.0.1"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -587,7 +587,7 @@ Func _FolderBackup()
 	;Backup process
 	$_FB_DirBackupLocation=FileSelectFolder("Browse to Backup location","::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
 	If $_FB_DriveToDrive=0 Then
-		$_FB_DirBackupLocation=$_FB_DirBackupLocation&"build_tools_backup_"&@UserName&"_"&@YEAR&@MON&@MDAY&@HOUR
+		$_FB_DirBackupLocation=$_FB_DirBackupLocation&"build_tools_backup_"&InputBox("User name","Input the name of the user/customer you are backing up and any other information you want.","_"&@YEAR&@MON&@MDAY)
 	EndIf
 	$temp=MsgBox(4,"Example","From: '"&$_FB_DirUserAccount&"\Documents Folder'"&@CRLF&"To: '"&$_FB_DirBackupLocation&"\Documents Folder'"&@CRLF&"Does this look correct?")
 	If $temp<>6 Then Return
