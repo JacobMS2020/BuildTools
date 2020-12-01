@@ -2,21 +2,21 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
-#AutoIt3Wrapper_Res_Fileversion=5.1.0.1
-#AutoIt3Wrapper_Res_ProductName=Build Tools5.1.0.1
-#AutoIt3Wrapper_Res_ProductVersion=5.1.0.1
+#AutoIt3Wrapper_Res_Fileversion=5.1.0.2
+#AutoIt3Wrapper_Res_ProductName=Build Tools5.1.0.2
+#AutoIt3Wrapper_Res_ProductVersion=5.1.0.2
 #AutoIt3Wrapper_Res_CompanyName=jTech Computers
 #AutoIt3Wrapper_Res_LegalCopyright=NA
 #AutoIt3Wrapper_Res_LegalTradeMarks=NA
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="5.1.0.1"
+Global $version="5.1.0.2"
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
 
-$Progress=ProgressOn("Starting...","Starting...","Loading varables...")
+ProgressOn("Starting...","Starting...","Loading varables...")
 ProgressSet(20,"Setting up Varables...")
 #Region ==================================================================================================================== Var
 
@@ -139,8 +139,12 @@ EndIf
 If $admin=0 Then InetRead($LinkGrabify,3) ; Tracking for stats
 
 If $ErrorMissingFiles>0 Then
-	MsgBox(48,"Warning!","Warning! There are "&$ErrorMissingFiles&" missing files, please re-download the software folder!")
-	_log("WARNING: SetDefaultBrowser.exe is missing!")
+	ProgressOff()
+	MsgBox(48,"Warning!","Warning! There are "&$ErrorMissingFiles&" missing files, please re-download the 'Build Tools' folder!"&@CRLF&"The program will not run correctly if this is not done. (Note: "& _
+	"The program cannot be run from within the .zip file, please extract the program first.)")
+	_log("WARNING: Files are missing!")
+	ProgressOn("Starting...","Starting...","More setup...")
+	ProgressSet(60,"More setup...")
 EndIf
 
 _log("Version: "&$version)
@@ -464,8 +468,13 @@ While 1
 			;_ChangeUserName()
 
 		Case $ButtonAddInstallers
-			ShellExecute($DirInstallers)
-			MsgBox(0,"Info","Program will need to be reloaded.",3)
+			If Not FileExists($DirInstallers) Then
+				MsgBox(16,"Error","The program has not been installed correctly, please download and extract the 'Build Tools' folder again.")
+				_log("ERROR: "&$DirInstallers&" Does not exist, this is because the program has not been fully installed/downloaded correctly.")
+			Else
+				ShellExecute($DirInstallers)
+				MsgBox(0,"Info","Program will need to be reloaded.",3)
+			EndIf
 
 		Case $ButtonUpdate
 			_Update()
