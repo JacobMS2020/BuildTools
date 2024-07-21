@@ -1,6 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Outfile_x64=Build Tools 6.0.0.0.exe
+#AutoIt3Wrapper_Outfile_x64=Build Tools 6.1.0.0.exe
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
 #AutoIt3Wrapper_Res_Fileversion=5.1.0.2
@@ -12,7 +12,7 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="6.0.0.0"
+Global $version="6.1.0.0"
 Global $version_name='Build Tools 6 - Crunchy Packet'
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
@@ -38,7 +38,6 @@ Global $LinkGrabify="https://grabify.link/KQJ835" ; Tracking link for stats
 ;=== Dir ===
 Global $DirBin=@ScriptDir&"\Build Tools"
 If Not FileExists($DirBin) Then DirCreate($DirBin)
-Global $DirInstallers=$DirBin&"\Installers" ; TODO No longer used
 Global $DirOther=$DirBin&"\Other"
 Global $dirLocalRoamCache=@LocalAppDataDir&"\Microsoft\Outlook\RoamCache"
 
@@ -101,6 +100,7 @@ $SpacingButtons=25
 Global $ServerActive=0
 Global $ClientActive=0
 Global $ServerIP=@IPAddress1
+Global $CycleNumber=1
 Global $ServerPort=3000
 
 ;=== REG ===
@@ -240,7 +240,6 @@ $width=$guiW/2-3
 $top+=20
 
 ;Software setup
-Global $SoftwareSearch=_FileListToArray($DirInstallers,"*.exe") ; TODO remove
 Global $SoftwareInstallers[99][2]
 Global $SoftwareCount=0
 Global $SoftwareError=0
@@ -335,9 +334,10 @@ $top+=35
 
 GUICtrlCreateLabel("Server IP:",$left,$top+2,70)
 	GUICtrlSetFont(-1,10,700)
-$InputServerIP=GUICtrlCreateInput($ServerIP,$left+75,$top,$width-80)
+$InputServerIP=GUICtrlCreateInput($ServerIP,$left+75,$top,$width-105)
 	GUICtrlSetFont(-1,9,700)
 	GUICtrlSetBkColor(-1,$ColorInput)
+$ButtonCycleIP=GUICtrlCreateButton("+",($left+75)+$width-105,$top-2,25)
 $top+=25
 
 GUICtrlCreateLabel("Port:",$left,$top+2,70)
@@ -453,6 +453,25 @@ While 1
 		Case $ButtonClientOnOFF
 			_Client()
 
+		Case $ButtonCycleIP
+			If $CycleNumber=1 Then
+				$CycleNumber=2
+				$ServerIP=@IPAddress2
+				GUICtrlSetData($InputServerIP,@IPAddress2)
+			ElseIf $CycleNumber=2 Then
+				$CycleNumber=3
+				$ServerIP=@IPAddress3
+				GUICtrlSetData($InputServerIP,@IPAddress3)
+			ElseIf $CycleNumber=3 Then
+				$CycleNumber=4
+				$ServerIP=@IPAddress4
+				GUICtrlSetData($InputServerIP,@IPAddress4)
+			ElseIf $CycleNumber=4 Then
+				$CycleNumber=1
+				$ServerIP=@IPAddress1
+				GUICtrlSetData($InputServerIP,@IPAddress1)
+			EndIf
+
 		Case $ButtonUpdateCopy
 			_Client()
 			ClipPut(GUICtrlRead($InputCopy))
@@ -482,11 +501,11 @@ While 1
 			;_ChangeUserName()
 
 		Case $ButtonAddInstallers
-			If Not FileExists($DirInstallers) Then
+			If Not FileExists($FileInstallers) Then
 				MsgBox(16,"Error","The program has not been installed correctly, please download and extract the 'Build Tools' folder again.")
-				_log("ERROR: "&$DirInstallers&" Does not exist, this is because the program has not been fully installed/downloaded correctly.")
+				_log("ERROR: "&$FileInstallers&" Does not exist, this is because the program has not been fully installed/downloaded correctly.")
 			Else
-				ShellExecute($DirInstallers)
+				ShellExecute($FileInstallers)
 				Sleep(1000)
 				MsgBox(0,"Info","NOTE: Build Tools will need to be reloaded if programs are added.", 4)
 			EndIf
@@ -730,6 +749,8 @@ EndFunc
 Func _Update()
 
 	_log("_Update called")
+	_log("Current Version: "&$CurrentVersion)
+	_log("Version: "&$version)
 
 	$_UpdateLink="https://github.com/kingjacob280/BuildTools/raw/main/Build%20Tools%20"&$CurrentVersion&".exe"
 	$_UpdateFileName="Build Tools "&$CurrentVersion&".exe"
@@ -1026,7 +1047,6 @@ Func _install() ;---------------------------------------------------------------
 			If GUICtrlRead($CheckSoftware[$i])=1 Then
 				GUICtrlSetState($CheckSoftware[$i],4)
 				$InstallError = 0
-				;ShellExecute($DirInstallers&"\"&$SoftwareSearch[$i])
 				$SoftwareString = $SoftwareString & " " & $SoftwareInstallers[$i][1]
 			EndIf
 		Next
