@@ -31,7 +31,7 @@ Global $colorBlack=0x000000
 Global $ServerActive=0
 Global $ClientActive=0
 Global $ServerIP=@IPAddress2
-Global $ServerPort=65432
+Global $ServerPort=3000
 
 ;----Running live
 #EndRegion ==================================================================================================================== Var

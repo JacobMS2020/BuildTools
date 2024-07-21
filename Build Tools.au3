@@ -1,5 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Outfile_x64=Build Tools 6.0.0.0.exe
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
 #AutoIt3Wrapper_Res_Fileversion=5.1.0.2
@@ -11,7 +12,8 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="5.1.0.2"
+Global $version="6.0.0.0"
+Global $version_name='Build Tools 6 - Crunchy Packet'
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
 If FileExists(@ScriptDir&"\admin") Then $admin=1
@@ -36,13 +38,14 @@ Global $LinkGrabify="https://grabify.link/KQJ835" ; Tracking link for stats
 ;=== Dir ===
 Global $DirBin=@ScriptDir&"\Build Tools"
 If Not FileExists($DirBin) Then DirCreate($DirBin)
-Global $DirInstallers=$DirBin&"\Installers"
+Global $DirInstallers=$DirBin&"\Installers" ; TODO No longer used
 Global $DirOther=$DirBin&"\Other"
 Global $dirLocalRoamCache=@LocalAppDataDir&"\Microsoft\Outlook\RoamCache"
 
 ;=== File ===
-Global $fileLog=$DirBin&"\Log.log"
+Global $FileLog=$DirBin&"\Log.log"
 Global $FileClipHistory=$DirBin&"\ClipBoardHistory.txt"
+Global $FileInstallers=$DirBin&"\installers.txt"
 _log("---running---") ;Start the log file
 
 ;SetDefaultBrowser.exe
@@ -79,6 +82,7 @@ Global $colorRED_dark=0x990000
 Global $colorRed=0xff0000
 Global $colorGreen=0x478a00
 Global $colorBlue=0x000fb0
+Global $colorBlueLight=0x027dc4
 Global $colorBlack=0x000000
 Global $colorPink=0xff54cf
 Global $colorGray=0xd1d1d1
@@ -97,7 +101,7 @@ $SpacingButtons=25
 Global $ServerActive=0
 Global $ClientActive=0
 Global $ServerIP=@IPAddress1
-Global $ServerPort=65432
+Global $ServerPort=3000
 
 ;=== REG ===
 Global $regSearch[3] = ["HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Search","SearchboxTaskbarMode","REG_DWORD"]
@@ -226,9 +230,9 @@ EndIf
 
 ; --------------------------------------------------------------------------------------- TOP
 $top=5
-GUICtrlCreateLabel('Build Tools 5 - Big Data',5,$top,$guiW-10,17,0x01)
+GUICtrlCreateLabel($version_name,5,$top,$guiW-10,17,0x01)
 	GUICtrlSetFont(-1,11,600)
-	GUICtrlSetBkColor(-1,$colorRED_dark)
+	GUICtrlSetBkColor(-1,$colorBlueLight)
 	GUISetBkColor($colorGray)
 
 ; --------------------------------------------------------------------------------------- LEFT
@@ -236,12 +240,22 @@ $width=$guiW/2-3
 $top+=20
 
 ;Software setup
-Global $SoftwareSearch=_FileListToArray($DirInstallers,"*.exe")
-
+Global $SoftwareSearch=_FileListToArray($DirInstallers,"*.exe") ; TODO remove
+Global $SoftwareInstallers[99][2]
+Global $SoftwareCount=0
 Global $SoftwareError=0
-If Not @error Then
-	For $i=1 To $SoftwareSearch[0] step 1
-		$CheckSoftware[$i]=GUICtrlCreateCheckbox(StringTrimRight($SoftwareSearch[$i],4),5,$top,$width,15)
+If _FileCountLines($FileInstallers) > 1 Then
+	For $i = 2 to _FileCountLines($FileInstallers) step 1
+		$SoftwareCount+=1
+		$temp = StringSplit(FileReadLine($FileInstallers,$i),",")
+		If $temp[0] <> 2 then
+			ProgressOff()
+			MsgBox(16,'ERROR Installers','There is a syntax error in the installers.txt file (line: '&$i&')' & @CRLF & FileReadLine($FileInstallers,$i))
+			Exit
+		EndIf
+		$SoftwareInstallers[$i][0] = $temp[1]
+		$SoftwareInstallers[$i][1] = $temp[2]
+		$CheckSoftware[$i]=GUICtrlCreateCheckbox($temp[1],5,$top,$width,15)
 		GUICtrlSetBkColor(-1,0xbdbdbd)
 		$top+=20
 	Next
@@ -473,14 +487,15 @@ While 1
 				_log("ERROR: "&$DirInstallers&" Does not exist, this is because the program has not been fully installed/downloaded correctly.")
 			Else
 				ShellExecute($DirInstallers)
-				MsgBox(0,"Info","Program will need to be reloaded.",3)
+				Sleep(1000)
+				MsgBox(0,"Info","NOTE: Build Tools will need to be reloaded if programs are added.", 4)
 			EndIf
 
 		Case $ButtonUpdate
 			_Update()
 
 		;Case $ButtonLog
-			;ShellExecute($fileLog)
+			;ShellExecute($FileLog)
 
 		Case $ButtonPowerOptions
 			_PowerOptions()
@@ -947,6 +962,7 @@ Func _Server() ;----------------------------------------------------------------
 		$SocketListen=TCPListen($ServerIP,$ServerPort,5)
 		If @error Then
 			_log("Error("&@error&"): Starting TCP Server, PORT: "&$ServerPort&" IP: "&$ServerIP)
+			MsgBox(16,'Server Error', 'Could not start the server: ' & @error)
 			GUICtrlSetColor($ButtonServerOnOFF,$colorRed)
 			GUICtrlSetBkColor($ButtonServerOnOFF,14408667)
 			TCPShutdown()
@@ -977,16 +993,20 @@ Func _Client() ;----------------------------------------------------------------
 		MsgBox(16,"Client","You cant be a Client when you are a Server!")
 		Return
 	EndIf
-	$ServerIP=GUICtrlRead($InputServerIP)
-	$ServerPort=GUICtrlRead($InputServerPort)
 
-	TCPStartup()
+	If $ClientActive=0 Then ;start the client server for the first time
+		$ClientActive = 1
+		$ServerIP=GUICtrlRead($InputServerIP)
+		$ServerPort=GUICtrlRead($InputServerPort)
 
-	$iSocket=TCPConnect($ServerIP,$ServerPort)
-	If @error Then
-		_log("ERROR("&@error&"): TCP Server not found.")
-		GUICtrlSetColor($ButtonClientOnOFF,$colorOrange)
-		Return
+		TCPStartup()
+
+		$iSocket=TCPConnect($ServerIP,$ServerPort)
+		If @error Then
+			_log("ERROR("&@error&"): TCP Server not found.")
+			GUICtrlSetColor($ButtonClientOnOFF,$colorRed)
+			Return
+		EndIf
 	EndIf
 
 	$recive=TCPRecv($iSocket,500)
@@ -999,13 +1019,23 @@ EndFunc
 Func _install() ;------------------------------------------------------------------------------ Install Software
 
 	_log("_install() called")
+	$SoftwareString =  ""
+	$InstallError = 1
 	If $SoftwareError=0 Then
-		For $i=1 To $SoftwareSearch[0] step 1
+		For $i=2 To $SoftwareCount+2 step 1
 			If GUICtrlRead($CheckSoftware[$i])=1 Then
 				GUICtrlSetState($CheckSoftware[$i],4)
-				ShellExecute($DirInstallers&"\"&$SoftwareSearch[$i])
+				$InstallError = 0
+				;ShellExecute($DirInstallers&"\"&$SoftwareSearch[$i])
+				$SoftwareString = $SoftwareString & " " & $SoftwareInstallers[$i][1]
 			EndIf
 		Next
+		If $InstallError = 1 Then
+			MsgBox(48,"warning!","Please select software to install.")
+			Return
+		EndIf
+		_log("_install() run command: " & "winget install -h --wait --verbose --disable-interactivity --no-upgrade" & $SoftwareString)
+		Run("winget install -h --wait --verbose --disable-interactivity --no-upgrade" & $SoftwareString)
 
 	Else
 		MsgBox(48,'Warning','Warning! There is no software to install!')
@@ -1037,7 +1067,7 @@ Func _TaskbarIconsToDefault()
 EndFunc
 
 Func _log($_logMSG) ;------------------------------------------------------------------------------ Log
-	_FileWriteLog($fileLog,$_logMSG,1)
+	_FileWriteLog($FileLog,$_logMSG,1)
 EndFunc
 
 Func _exit($_exitCode) ;------------------------------------------------------------------------------ EXIT

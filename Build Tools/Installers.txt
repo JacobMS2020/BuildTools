@@ -1,0 +1,6 @@
+--- HELP: Friendly Name,winget package ID ---
+Google Chrome,Google.Chrome
+Malwarebytes,Malwarebytes.Malwarebytes
+Open Office,Apache.OpenOffice
+Adobe Acrobat Reader DC (64-bit),Adobe.Acrobat.Reader.64-bit
+Mozilla Thunderbird,Mozilla.Thunderbird
