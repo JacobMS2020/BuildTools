@@ -1,6 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Outfile_x64=Build Tools 6.1.0.0.exe
+#AutoIt3Wrapper_Outfile_x64=Build Tools 6.1.0.1.exe
 #AutoIt3Wrapper_Res_Comment=This program helps IT professionals automate your work.
 #AutoIt3Wrapper_Res_Description=Automation Software By Jacob Stewart
 #AutoIt3Wrapper_Res_Fileversion=5.1.0.2
@@ -12,7 +12,7 @@
 #AutoIt3Wrapper_Res_SaveSource=y
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
-Global $version="6.1.0.0"
+Global $version="6.1.0.1"
 Global $version_name='Build Tools 6 - Crunchy Packet'
 ;VERSION 4 AND ABOVE IS NOW HOSTED ON GITHUB.COM
 Global $admin=0
@@ -33,7 +33,7 @@ $ErrorMissingFiles=0
 Global $LinkWebsiteHelp="https://github.com/kingjacob280/BuildTools/wiki/Help"
 Global $LinkWebsite="https://github.com/kingjacob280/BuildTools"
 Global $LinkCurrentVersion="https://raw.githubusercontent.com/kingjacob280/BuildTools/main/current%20version.txt"
-Global $LinkGrabify="https://grabify.link/KQJ835" ; Tracking link for stats
+Global $LinkGrabify="https://grabify.link/WUCHEN" ; Tracking link for stats
 
 ;=== Dir ===
 Global $DirBin=@ScriptDir&"\Build Tools"
